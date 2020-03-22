@@ -1,0 +1,10 @@
+.box{
+    color: black;
+    font-size: 36px;
+}
+.img{
+    background: url('../src/04.jpg') no-repeat;
+    width: 200px;
+    height: 200px;
+
+}
