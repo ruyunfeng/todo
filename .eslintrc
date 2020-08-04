@@ -1,0 +1,19 @@
+{
+    // "extends": "standard",
+    "extends": [
+        "vue", 
+        "standard", 
+        "plugin:vue/recommended"
+    ],
+    "plugins": [
+        "html",
+        "vue"
+    ],
+    "parser": "babel-eslint",
+    "rules": {
+        "no-new": "off"
+    },
+    "parserOptions": {
+        "parser": "babel-eslint"
+    }
+}

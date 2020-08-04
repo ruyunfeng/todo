@@ -33,7 +33,7 @@
         border-bottom: 1px solid rgba(0,0,0,0.06);
         &:hover{
             .destory:after{
-                content: '×'
+                content: '×';
             }
         }
         label{
@@ -64,10 +64,10 @@
         appearance: none;
         outline: none;
         &:after{
-            content: url('./../assets/images/round.svg');
+            content: url('../../assets/images/round.svg');
         }
         &:checked:after{
-            content: url('./../assets/images/done.svg');
+            content: url('../../assets/images/done.svg');
         }
     }
     .destory{

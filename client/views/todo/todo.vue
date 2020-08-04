@@ -9,11 +9,17 @@
         >
         <item 
             :todo="todo" 
-            v-for="todo in todos"
+            v-for="todo in filteredTodos"
             :key="todo.id"
             @del="deleteTodo"
             />
-        <tabs :filter="filter" :todos="todos"></tabs>
+        <tabs 
+            :filter="filter" 
+            :todos="todos"
+            @toggle="toggleFilter"
+            @clearAll="clearAllCompleted"
+        />
+        <!-- <router-view></router-view> -->
     </section>
 </template>
 <script>
@@ -21,6 +27,27 @@
     import Tabs from './tabs.vue';
     let id = 0;
     export default{
+        beforeRouteEnter(to,from,next){
+            console.log('todo before enter')
+            next(vm => {
+                console.log('after enter ' , vm)
+            })
+        },
+        beforeRouteUpdate(to,from,next){
+            console.log('todo before Upadte')
+            next()
+        },
+        beforeRouteLeave(to,from,next){
+            console.log('todo before Leave')
+            // if(global.confirm('are you sure?')){
+            next()
+            // }
+            
+        },
+        props:['id'],
+        mounted(){
+            console.log(this.id)
+        },
         components:{
             Item,Tabs
         },
@@ -28,6 +55,15 @@
             return {
                 todos:[],
                 filter:'all'
+            }
+        },
+        computed:{
+            filteredTodos(){
+                if(this.filter === 'all'){
+                    return this.todos
+                }
+                const completed = this.filter === "completed";
+                return this.todos.filter(todo => completed === todo.completed)
             }
         },
         methods:{
@@ -41,6 +77,12 @@
             },
             deleteTodo(id){
                 this.todos.splice(this.todos.findIndex(todo => todo.id === id),1);
+            },
+            toggleFilter(state){
+                this.filter = state
+            },
+            clearAllCompleted(){
+                this.todos = this.todos.filter(todo => !todo.completed)
             }
         }
     }

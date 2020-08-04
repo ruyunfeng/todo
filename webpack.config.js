@@ -2,13 +2,18 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+
+const ExtractPlugin = require('extract-text-webpack-plugin');
+
 const isDev = process.env.NODE_ENV === "development";
 const config = {
-    entry:'./src/index.js',
+    entry: path.join(__dirname, './src/index.js'),
     output:{
         filename:'bundle.js',
         path:path.resolve(__dirname,'dist')
     },
+    
+    
     module:{
         rules:[
             {
@@ -18,27 +23,6 @@ const config = {
             {
                 test:/\.jsx$/,
                 loader:'babel-loader'
-            },
-            {
-                test:/\.css$/,
-                use:[
-                    'style-loader',
-                    'css-loader'
-                ]
-            },
-            {
-                test:/\.less$/,
-                use:[
-                    'style-loader',
-                    'css-loader',
-                    {
-                        loader : 'postcss-loader',
-                        options:{
-                            sourceMap: true
-                        }
-                    },
-                    'less-loader'
-                ]
             },
             {
                 test:/\.(htm|html)/,
@@ -72,6 +56,20 @@ const config = {
     ]
 }
 if(isDev){
+    config.module.rules.push({
+        test:/\.less$/,
+        use:[
+            'style-loader',
+            'css-loader',
+            {
+                loader : 'postcss-loader',
+                options:{
+                    sourceMap: true
+                }
+            },
+            'less-loader'
+        ]
+    })
     config.devtool = "#cheap-moudle-eval-source-map"
     config.devServer = {
         contentBase:'./dist',
@@ -85,6 +83,39 @@ if(isDev){
     config.plugins.push(
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()
+    )
+} else {
+    config.entry = {
+        app: path.join(__dirname, './src/index.js'),
+        vendor: ['vue']
+    }
+    config.output.filename = '[name].[chunkhash:8].js';
+    config.module.rules.push(
+        {
+            test:/\.less$/,
+            use: ExtractPlugin.extract({
+                fallback:'style-loader',
+                use:[
+                    'css-loader',
+                    {
+                        loader : 'postcss-loader',
+                        options:{
+                            sourceMap: true
+                        }
+                    },
+                    'less-loader'
+                ]
+            })
+        }
+    )
+    config.plugins.push(
+        new ExtractPlugin('styles.[md5:contenthash:hex:8].css'),
+        new webpack.optimize.RuntimeChunkPlugin({
+            name:'vendor'
+        }),
+        new webpack.optimize.RuntimeChunkPlugin({
+            name:'runtime'
+        })
     )
 }
 module.exports = config;
